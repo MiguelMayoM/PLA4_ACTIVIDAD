@@ -282,7 +282,7 @@ class OpsCRUD{
       }
     }
     
-    impln("Pulse una tecla para volver al Menú Anterior");
+    impln("Pulse \"Enter\" para volver al Menú Anterior");
     scnEntrada.nextLine();
     //scnEntrada.close();
 
