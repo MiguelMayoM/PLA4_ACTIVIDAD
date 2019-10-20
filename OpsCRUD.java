@@ -237,7 +237,7 @@ class OpsCRUD{
                      nombre guardado en un array, he de restarle uno a "eleccion",
                      referido a columnas que empiezan por 1
           */
-          pstmt.setInt(2, eleccion - 1);
+          pstmt.setInt(2, eleccion);
           InsertarValor(0, pstmt, valor, arrTipoCols[eleccion-1]);
           pstmt.execute();
           impln("Registro modificado con éxito\n");
