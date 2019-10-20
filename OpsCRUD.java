@@ -634,7 +634,7 @@ class OpsCRUD{
           if (rs.getString(i) == null) {
             arrLinea[i-1] = "";
           } else {
-            if(rsMD.getColumnTypeName(i).equals("DATE")) {
+            if(rs.getMetaData().getColumnTypeName(i).equals("DATE")) {
               arrLinea[i-1] = rs.getDate(i).toString().replaceAll("(\\d{4})-(\\d{2})-(\\d{2})","$3/$2/$1");
             } else {
               arrLinea[i-1] = rs.getString(i).replaceAll("(.{20})(.{3,})","$1...");
