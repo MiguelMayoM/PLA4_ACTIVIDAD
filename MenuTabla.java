@@ -7,7 +7,7 @@ public class MenuTabla extends Menu {
   /*Aquí también podría hallar las tablas que se encuentran en la BD y entonces
     darlas a elegir, y entonces el código sería cerrado*/
   enum enmOpciones {
-    A("Producto", "MenuCRUD"), B("Proveedor", "MenuCRUD"), 
+    A("Producto", "MenuCRUD"), B("Proveedor", "MenuCRUD"), C("Cliente", "MenuCRUD"),
     Z("Salir", "");
     private final String opcion, irMenu;
     enmOpciones(String strO, String strIM){opcion = strO; irMenu = strIM;}
