@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.text.SimpleDateFormat;
@@ -276,7 +277,8 @@ class OpsCRUD{
             + "Puede ser debido a varias causas de dependencia (constraint) entre tablas:\n"
             + "+ Está tratando de añadir una clave extranjera que no está registrada en su tabla respectiva\n"
             + "+ Está tratando de borrar un registro que es clave extranjera de otros registros, con lo cual\n"
-            + "  aquellos quedarían huérfanos");
+            + "  aquellos quedarían huérfanos\n"
+            + "+ Está intentando insertar un identificador de clave primaria que ya existe en la BD.");
       } else {
         System.out.println(e);
       }
@@ -469,9 +471,18 @@ class OpsCRUD{
         
         /*Esto tendría que probarlo con la tabla Cliente...*/
         case "DATE":
+          /*Con fechas no vale poner "" si no quiero una fecha, porque no es
+            un String. Tampoco quiero que ponga una fecha 0000-00-00. He de usar
+            null*/
           Date dteValor = (Date) valor;
+          /*En nuestra tabla el valor fecha no es obligatorio, pero si no escribo
+            nada, me da error, no interpreta el String vacío ""*/
+          if (dteValor == null) {
+             pstmt.setNull(i, java.sql.Types.DATE);
+          } else {
           /*Si la variable es tipo java.util.Date, la convierto a java.sql.Date*/
           pstmt.setDate(i, new java.sql.Date(dteValor.getTime()));
+          }
           break;
       }
     } catch(Exception e) {System.out.println(e);}  
@@ -612,8 +623,23 @@ class OpsCRUD{
         while(rs.next()) entonces vaya al primer registro*/
       //rs.beforeFirst();      
       while (rs.next()) {
-        for (int i=1; i<=numCols; i++) {
-          arrLinea[i-1] = rs.getString(i).replaceAll("(.{20})(.{3,})","$1...");
+        for (int i=1; i<=numCols; i++) {         
+          /*El formato fecha se guarda Año-mes-día y lo voy a presentar al revés
+            Si se hace en una consulta, se puede escoger el formato así:
+            SELECT DATE_FORMAT(campo, '%Y-%m-%d') campo FROM tabla;
+            Pero claro, nosotros estamos leyendo todos los campos así que, en vez
+            de haber hecho un SELECT * tendría que haber llamado a los campos uno
+            por uno...
+          */
+          if (rs.getString(i) == null) {
+            arrLinea[i-1] = "";
+          } else {
+            if(rsMD.getColumnTypeName(i).equals("DATE")) {
+              arrLinea[i-1] = rs.getDate(i).toString().replaceAll("(\\d{4})-(\\d{2})-(\\d{2})","$3/$2/$1");
+            } else {
+              arrLinea[i-1] = rs.getString(i).replaceAll("(.{20})(.{3,})","$1...");
+            }
+          }
         }
         System.out.format(formato, arrLinea);
       }
